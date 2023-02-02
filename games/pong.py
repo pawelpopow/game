@@ -91,6 +91,46 @@ class Drawable(object):
         surface.blit(self.surface, self.rect)
 
 
+class Ball(Drawable):
+    """
+        Piłeczka, sama kontroluje swoją prędkość i kierunek poruszania się.
+    """
+
+    def __init__(self, width, height, x, y, color=(255, 0, 0), x_speed=3, y_speed=3):
+        super(Ball, self).__init__(width, height, x, y, color)
+        pygame.draw.ellipse(self.surface, self.color, [0, 0, self.width, self.height])
+        self.x_speed = x_speed
+        self.y_speed = y_speed
+        self.start_x = x
+        self.start_y = y
+
+    def bounce_y(self):
+        """
+            Odwraca wektor prędkości w osi Y
+        """
+        self.y_speed *= -1
+
+    def bounce_x(self):
+        """
+            Odwraca wektor prędkości w osi X
+        """
+        self.x_speed *= -1
+
+    def reset(self):
+        """
+            Ustawia piłeczkę w położeniu początkowym i odwraca wektor prędkości w osi Y
+        """
+        self.rect.move(self.start_x, self.start_y)
+        self.bounce_y()
+
+    def move(self):
+        """
+            Przesuwa piłeczkę o wektor prędkości
+        """
+        self.rect.x += self.x_speed
+        self.rect.y += self.y_speed
+
+
 if __name__ == '__main__':
     board = Board(800, 400)
     board.draw()
