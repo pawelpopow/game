@@ -51,13 +51,13 @@ class PongGame(object):
 
     def run(self):
         """
-        Główna pętla programu
+            Główna pętla programu
         """
         while not self.handle_events():
             # działaj w pętli do momentu otrzymania sygnału do wyjścia
             # zegar którego użyjemy do kontrolowania szybkości rysowania
             # kolejnych klatek gry
-            self.ball.move()
+            self.ball.move(self.board)
             self.board.draw(
                 self.ball,
             )
@@ -126,14 +126,46 @@ class Ball(Drawable):
         self.rect.move(self.start_x, self.start_y)
         self.bounce_y()
 
-    def move(self):
+    def move(self, board, *args):
         """
         Przesuwa piłeczkę o wektor prędkości
         """
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
 
+        if self.rect.x < 0 or self.rect.x > board.surface.get_width():
+            self.bounce_x()
+
+        if self.rect.x < 0 or self.rect.y > board.surface.get_height():
+            self.bounce_y()
+
+        for racket in args:
+            if self.rect.colliderect(racket.rect):
+                self.bounce_y()
+
+
+class Racket(Drawable):
+    """
+        Rakietka, porusza się w osi X z ograniczeniem prędkości.
+    """
+
+    def __init__(self, width, height, x, y, color=(0, 255, 0), max_speed=10):
+        super().__init__(width, height, x, y, color)
+        self.max_speed = max_speed
+        self.surface.fill(color)
+
+    def move(self, x):
+        """
+            Przesuwa rakietkę w wyznaczone miejsce.
+        """
+        delta = x - self.rect.x
+        if abs(delta) > self.max_speed:
+            delta = self.max_speed if delta > 0 else -self.max_speed
+        self.rect.x += delta
+
         
+
+
 
 
 if __name__ == '__main__':
