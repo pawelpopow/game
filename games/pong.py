@@ -51,20 +51,20 @@ class PongGame(object):
         self.player1 = Racket(width=80, height=20, x=width / 2 - 40, y=height - 40)
         self.player2 = Racket(width=80, height=20, x=width / 2 - 40, y=20, color=(0, 0, 0))
         self.ai = Ai(self.player2, self.ball)
+        self.judge = Judge(self.board, self.ball, self.player2, self.ball)
 
     def run(self):
         """
-            Główna pętla programu
+        Główna pętla programu
         """
         while not self.handle_events():
             # działaj w pętli do momentu otrzymania sygnału do wyjścia
-            # zegar którego użyjemy do kontrolowania szybkości rysowania
-            # kolejnych klatek gry
             self.ball.move(self.board, self.player1, self.player2)
             self.board.draw(
                 self.ball,
                 self.player1,
                 self.player2,
+                self.judge,
             )
             self.ai.move()
             self.fps_clock.tick(30)
@@ -191,12 +191,12 @@ class Ai(object):
 
 class Judge(object):
     """
-        Sędzia gry
+    Sędzia gry
     """
 
     def __init__(self, board, ball, *args):
-        self.board = board
         self.ball = ball
+        self.board = board
         self.rackets = args
         self.score = [0, 0]
 
@@ -207,7 +207,7 @@ class Judge(object):
 
     def update_score(self, board_height):
         """
-            Jeśli trzeba przydziela punkty i ustawia piłeczkę w początkowym położeniu.
+        Jeśli trzeba przydziela punkty i ustawia piłeczkę w początkowym położeniu.
         """
         if self.ball.rect.y < 0:
             self.score[0] += 1
@@ -216,9 +216,9 @@ class Judge(object):
             self.score[1] += 1
             self.ball.reset()
 
-    def draw_text(self, surface, x, y):
+    def draw_text(self, surface, text, x, y):
         """
-          Rysuje wskazany tekst we wskazanym miejscu
+        Rysuje wskazany tekst we wskazanym miejscu
         """
         text = self.font.render(text, True, (150, 150, 150))
         rect = text.get_rect()
@@ -227,15 +227,14 @@ class Judge(object):
 
     def draw_on(self, surface):
         """
-            Aktualizuje i rysuje wyniki
+        Aktualizuje i rysuje wyniki
         """
-
         height = self.board.surface.get_height()
         self.update_score(height)
 
         width = self.board.surface.get_width()
         self.draw_text(surface, "Player: {}".format(self.score[0]), width / 2, height * 0.3)
-        self.draw_text(surface, "Computer: {}".format(self.score[1], width / 2, height * 0.7))
+        self.draw_text(surface, "Computer: {}".format(self.score[1]), width / 2, height * 0.7)
 
 
 if __name__ == '__main__':
