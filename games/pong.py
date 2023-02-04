@@ -2,8 +2,6 @@ import pygame
 import pygame.locals
 import time
 
-from pygame import surface
-
 
 class Board(object):
     """
