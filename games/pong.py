@@ -47,6 +47,7 @@ class PongGame(object):
         # zegar którego użyjemy do kontrolowania szybkości rysowania
         # kolejnych klatek gry
         self.fps_clock = pygame.time.Clock()
+        self.ball = Ball(20, 20, width / 2, height / 2)
 
     def run(self):
         """
@@ -54,7 +55,12 @@ class PongGame(object):
         """
         while not self.handle_events():
             # działaj w pętli do momentu otrzymania sygnału do wyjścia
-            self.board.draw()
+            # zegar którego użyjemy do kontrolowania szybkości rysowania
+            # kolejnych klatek gry
+            self.ball.move()
+            self.board.draw(
+                self.ball,
+            )
             self.fps_clock.tick(30)
 
     def handle_events(self):
@@ -127,46 +133,12 @@ class Ball(Drawable):
         self.rect.x += self.x_speed
         self.rect.y += self.y_speed
 
-
-class PongGame(object):
-    """
-    Łączy wszystkie elementy gry w całość.
-    """
-
-    def __init__(self, width, height):
-        pygame.init()
-        self.board = Board(width, height)
-        # zegar którego użyjemy do kontrolowania szybkości rysowania
-        # kolejnych klatek gry
-        self.fps_clock = pygame.time.Clock()
-        self.ball = Ball(20, 20, width / 2, height / 2)
-
-    def run(self):
-        """
-        Główna pętla programu
-        """
-        while not self.handle_events():
-            # działaj w pętli do momentu otrzymania sygnału do wyjścia
-            self.ball.move()
-            self.board.draw(
-                self.ball,
-            )
-            self.fps_clock.tick(30)
-
-    def handle_events(self):
-        """
-               Obsługa zdarzeń systemowych, tutaj zinterpretujemy np. ruchy myszką
-
-               :return True jeżeli pygame przekazał zdarzenie wyjścia z gry
-               """
-        for event in pygame.event.get():
-            if event.type == pygame.locals.QUIT:
-                pygame.quit()
-                return True
+        
 
 
 if __name__ == '__main__':
     board = Board(800, 400)
     board.draw()
+    time.sleep(5)
     game = PongGame(800, 400)
     game.run()
