@@ -189,6 +189,55 @@ class Ai(object):
         self.racket.move(x)
 
 
+class Judge(object):
+    """
+        Sędzia gry
+    """
+
+    def __init__(self, board, ball, *args):
+        self.board = board
+        self.ball = ball
+        self.rackets = args
+        self.score = [0, 0]
+
+        # Przed pisaniem tekstów, musimy zainicjować mechanizmy wyboru fontów PyGame
+        pygame.font.init()
+        font_path = pygame.font.match_font('arial')
+        self.font = pygame.font.Font(font_path, 64)
+
+    def update_score(self, board_height):
+        """
+            Jeśli trzeba przydziela punkty i ustawia piłeczkę w początkowym położeniu.
+        """
+        if self.ball.rect.y < 0:
+            self.score[0] += 1
+            self.ball.reset()
+        elif self.ball.rect.y > board_height:
+            self.score[1] += 1
+            self.ball.reset()
+
+    def draw_text(self, surface, x, y):
+        """
+          Rysuje wskazany tekst we wskazanym miejscu
+        """
+        text = self.font.render(text, True, (150, 150, 150))
+        rect = text.get_rect()
+        rect.center = x, y
+        surface.blit(text, rect)
+
+    def draw_on(self, surface):
+        """
+            Aktualizuje i rysuje wyniki
+        """
+
+        height = self.board.surface.get_height()
+        self.update_score(height)
+
+        width = self.board.surface.get_width()
+        self.draw_text(surface, "Player: {}".format(self.score[0]), width / 2, height * 0.3)
+        self.draw_text(surface, "Computer: {}".format(self.score[1], width / 2, height * 0.7))
+
+
 if __name__ == '__main__':
     board = Board(800, 400)
     board.draw()
